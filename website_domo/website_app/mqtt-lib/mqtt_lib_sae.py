@@ -21,13 +21,28 @@ class MqttConnexion:
 
     #### Fonction logique SAE
 
-    def give_feedback(self,topic, message):
-
-        pass
+    def give_feedback(self, message):
+        """
+        Methode d'envoi d'un message de FEEDBACK sur un TOPIC
+        
+        :message : Message de feedback : default to state_led
+        :type message : str
+         
+        """
 
         ## S'occupe de gerer les retours dans un autre topic
 
     def state_led(self,message):
+        """
+        Methode d'envoi du message d'état à la LED, si message "ON", alors envois sur le topic associé le message, sinon "OFF" pour eteindre.
+        
+        :message : Message d'état envoyé au topic
+        :type message : str
+        
+        :return : Une chaine de caractère de logging
+        :rtype : str
+        
+        """
 
         pass
 
