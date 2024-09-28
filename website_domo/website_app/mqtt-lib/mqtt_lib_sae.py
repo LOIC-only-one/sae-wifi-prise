@@ -1,10 +1,14 @@
+# /usr/bin/python
+
+## Author Maurer Loïc
+## Université Haute Alsace
+
 import paho.mqtt.client as mqtt
 import logging
 import time
 import threading
 from colorama import Fore, Style, init
 
-# Initialize Colorama
 init(autoreset=True)
 
 class MqttConnexion:
@@ -22,7 +26,15 @@ class MqttConnexion:
         self.client.on_disconnect = self.on_disconnect
 
     def give_feedback(self, message, feedback_topic):
-        """Envoi d'un message de feedback sur un TOPIC"""
+        """Envoi d'un message de feedback sur un TOPIC
+        
+        :param message : Message à envoyer sur le topic
+        :type message : str
+        
+        :param feedback_topic : Topic sur lequel envoyer le feedback
+        :type feedback_topic : str
+        
+        """
         feed = f"Envoi de feedback : {message} sur le topic {feedback_topic}"
         logging.info(feed)
         publication = self.client.publish(feedback_topic, message)
@@ -33,7 +45,14 @@ class MqttConnexion:
             logging.error(f"Échec de la publication sur {feedback_topic}")
 
     def state_led(self, message, led_topic="sae301/led"):
-        """Envoi du message d'état à la LED"""
+        """Envoi du message d'état à la LED
+        
+        :param message : Message à envoyer sur le topic
+        :type message : str
+        
+        :param led_topic : Topic sur lequel envoyer le message
+        :type led_topic : str : default to sae301/led
+        """
         result = self.client.publish(led_topic, message)
         
         if result.rc == mqtt.MQTT_ERR_SUCCESS:
@@ -42,9 +61,19 @@ class MqttConnexion:
             logging.error(f"Échec de la publication sur {led_topic}")
 
     def get_temp(self, temp_topic='sae301/temperature'):
-        """Souscription au topic de température"""
+        """Souscription au topic de température
+        
+        :param temp_topic : Topic à s'abonner pour la température
+        :type temp_topic : str default to sae301/temperature
+        
+        """
         self.client.subscribe(temp_topic)
         logging.info(f"{Fore.YELLOW}Souscription au topic : {temp_topic}{Style.RESET_ALL}")
+
+##################################################################
+##################################################################
+####################Fonction de la doc Paho#######################
+
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
         """Callback appelé lors de la connexion au broker"""
@@ -64,6 +93,7 @@ class MqttConnexion:
         """Callback appelé lors de la déconnexion"""
         logging.info(f"Déconnexion avec le code de retour {rc}")
 
+
     def handle_connexion(self):
         """Gère la connexion au broker MQTT et écoute les messages"""
         try:
@@ -75,15 +105,22 @@ class MqttConnexion:
             self.client.disconnect()
             logging.info("Déconnecté du broker")
 
+
+
+########################################################################
+########################################################################
+########################################################################
+
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     mqtt_connexion = MqttConnexion(topic="sae301/led/status")
     
-    # Start the MQTT connection in a separate thread
     threading.Thread(target=mqtt_connexion.handle_connexion, daemon=True).start()
     
-    time.sleep(1)  # Wait for the connection to establish
+    time.sleep(1)
 
     try:
         # TEST DE LA LED
