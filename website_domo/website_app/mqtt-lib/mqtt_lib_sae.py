@@ -1,19 +1,17 @@
 import paho.mqtt.client as mqtt
 import logging
 import time
+import threading
+from colorama import Fore, Style, init
 
+# Initialize Colorama
+init(autoreset=True)
 
 class MqttConnexion:
 
     USERNAME = "serveur-rpi"
 
     def __init__(self, broker: str = "broker.Id00l.eu", port: int = 14022, topic: str = "alpha/1") -> None:
-        """
-        :param broker: Broker MQTT (adresse IP ou URL)
-        :param port: Port du broker MQTT
-        :param topic: Topic MQTT auquel s'abonner
-        Constructeur de ma classe de connexion pour la SAE python
-        """
         self.broker = broker
         self.port = port
         self.topic = topic
@@ -24,58 +22,50 @@ class MqttConnexion:
         self.client.on_disconnect = self.on_disconnect
 
     def give_feedback(self, message, feedback_topic):
-        """
-        Méthode d'envoi d'un message de FEEDBACK sur un TOPIC
-        :message : Message de feedback
-        :type message : str
-        """
+        """Envoi d'un message de feedback sur un TOPIC"""
         feed = f"Envoi de feedback : {message} sur le topic {feedback_topic}"
         logging.info(feed)
         publication = self.client.publish(feedback_topic, message)
         
         if publication.rc == mqtt.MQTT_ERR_SUCCESS:
-            logging.info(f"Message '{message}' publié avec succès sur {feedback_topic}")
+            logging.info(f"{Fore.GREEN}Message '{message}' publié avec succès sur {feedback_topic}{Style.RESET_ALL}")
         else:
             logging.error(f"Échec de la publication sur {feedback_topic}")
 
     def state_led(self, message, led_topic="sae301/led"):
-        """
-        Méthode d'envoi du message d'état à la LED
-        :message : Message d'état envoyé au topic
-        :type message : str
-        :led_topic : Topic pour la LED
-        :type led_topic : str
-        """
+        """Envoi du message d'état à la LED"""
         result = self.client.publish(led_topic, message)
         
         if result.rc == mqtt.MQTT_ERR_SUCCESS:
-            logging.info(f"Message '{message}' publié avec succès sur {led_topic}")
+            logging.info(f"{Fore.GREEN}Message '{message}' publié avec succès sur {led_topic}{Style.RESET_ALL}")
         else:
             logging.error(f"Échec de la publication sur {led_topic}")
 
-
-
+    def get_temp(self, temp_topic='sae301/temperature'):
+        """Souscription au topic de température"""
+        self.client.subscribe(temp_topic)
+        logging.info(f"{Fore.YELLOW}Souscription au topic : {temp_topic}{Style.RESET_ALL}")
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
-        """ Callback appelé lorsque le script se connecte au broker """
+        """Callback appelé lors de la connexion au broker"""
         if reason_code == 0:
             logging.info("Connexion au broker réussie :)")
             client.subscribe(self.topic)
-            logging.info(f"Abonné au topic : {self.topic}")
+            logging.info(f"{Fore.YELLOW}Abonné au topic : {self.topic}{Style.RESET_ALL}")
         else:
             logging.error(f"Erreur de connexion : {reason_code}")
 
     def on_message(self, client, userdata, msg):
-        """ Callback appelé lorsqu'un message est reçu """
+        """Callback appelé lorsqu'un message est reçu"""
         message = str(msg.payload.decode())
         logging.info(f"{self.USERNAME} : {msg.topic} : {message}")
 
     def on_disconnect(self, client, userdata, rc):
-        """ Callback appelé lors de la déconnexion """
+        """Callback appelé lors de la déconnexion"""
         logging.info(f"Déconnexion avec le code de retour {rc}")
 
     def handle_connexion(self):
-        """ Méthode pour gérer la connexion au broker MQTT et écouter les messages """
+        """Gère la connexion au broker MQTT et écoute les messages"""
         try:
             self.client.connect(self.broker, self.port, 60)
             self.client.loop_forever()
@@ -85,25 +75,28 @@ class MqttConnexion:
             self.client.disconnect()
             logging.info("Déconnecté du broker")
 
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     mqtt_connexion = MqttConnexion(topic="sae301/led/status")
     
-    try:
-        mqtt_connexion.client.connect(mqtt_connexion.broker, mqtt_connexion.port, 60)
+    # Start the MQTT connection in a separate thread
+    threading.Thread(target=mqtt_connexion.handle_connexion, daemon=True).start()
+    
+    time.sleep(1)  # Wait for the connection to establish
 
-        # Publication de l'état de la LED (message LED_OFF)
+    try:
+        # TEST DE LA LED
         mqtt_connexion.state_led("LED_OFF", led_topic="sae301/led")
-        
-        # Envoi d'un message de feedback sur le topic de statut
-        mqtt_connexion.give_feedback("LED éteinte", "sae301/led/status")
-        
-        # Boucle pour écouter les messages MQTT
-        mqtt_connexion.client.loop_forever()
-    except Exception as e:
-        logging.error(f"Erreur lors de la connexion ou pendant la réception des messages : {str(e)}")
-    finally:
+        mqtt_connexion.give_feedback("OFF", "sae301/led/status")
+
+        # Subscribe to temperature updates
+        mqtt_connexion.get_temp('sae301/temperature')
+
+        # Keep the main thread alive to listen for messages
+        while True:
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        logging.info("Arrêt du script...")
         mqtt_connexion.client.disconnect()
-        logging.info("Déconnecté du broker")
