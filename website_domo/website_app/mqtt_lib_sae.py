@@ -68,6 +68,13 @@ class MqttConnexion:
         logging.info(f"{Fore.YELLOW}Souscription au topic : {temp_topic}{Style.RESET_ALL}")
 
     def handle_light(self, action):
+        """Gestion des differentes actions du site web
+        
+        :param action : Etat et action envoyé a la LED
+        :type action str
+        
+        """
+        
         led_topic_1 = "sae301/led"
         led_topic_2 = "sae301_2/led"
 
