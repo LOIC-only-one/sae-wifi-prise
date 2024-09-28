@@ -70,6 +70,27 @@ class MqttConnexion:
         self.client.subscribe(temp_topic)
         logging.info(f"{Fore.YELLOW}Souscription au topic : {temp_topic}{Style.RESET_ALL}")
 
+
+    def handle_light(self,action):
+        if action == "lumiere1_on":
+            self.state_led("LED_ON")
+            self.give_feedback("LED_ON")
+        elif action == "lumiere1_off":
+            self.state_led("LED_OFF")
+            self.give_feedback("LED_OFF")
+        elif action == "lumiere2_on":
+            self.state_led("LED_ON")
+            self.give_feedback("LED_ON")
+        elif action == "lumiere2_off":
+            self.state_led("LED_OFF")
+            self.give_feedback("LED_OFF")
+        elif action == "all_on":
+            self.state_led("LED_ON") and self.state_led("LED_ON")
+            self.give_feedback("LEDS ALLUMEES")
+        elif action == "all_off":
+            self.state_led("LED_OFF") and self.state_led("LED_OFF")
+            self.give_feedback("LEDS ETEINTES")
+        
 ##################################################################
 ##################################################################
 ####################Fonction de la doc Paho#######################
@@ -110,30 +131,3 @@ class MqttConnexion:
 ########################################################################
 ########################################################################
 ########################################################################
-
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-    mqtt_connexion = MqttConnexion(topic="sae301/led/status")
-    
-    threading.Thread(target=mqtt_connexion.handle_connexion, daemon=True).start()
-    
-    time.sleep(1)
-
-    try:
-        # TEST DE LA LED
-        mqtt_connexion.state_led("LED_OFF", led_topic="sae301/led")
-        mqtt_connexion.give_feedback("OFF", "sae301/led/status")
-
-        # Subscribe to temperature updates
-        mqtt_connexion.get_temp('sae301/temperature')
-
-        # Keep the main thread alive to listen for messages
-        while True:
-            time.sleep(1)
-
-    except KeyboardInterrupt:
-        logging.info("Arrêt du script...")
-        mqtt_connexion.client.disconnect()

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrôle des lumières</title>
+</head>
+<body>
+    <h1>Contrôle des lumières</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <button type="submit" name="action" value="lumiere1_on">Allumer Lumière 1</button>
+        <button type="submit" name="action" value="lumiere1_off">Éteindre Lumière 1</button>
+        
+        <button type="submit" name="action" value="lumiere2_on">Allumer Lumière 2</button>
+        <button type="submit" name="action" value="lumiere2_off">Éteindre Lumière 2</button>
+        
+        <button type="submit" name="action" value="all_on">Allumer les deux lumières</button>
+        <button type="submit" name="action" value="all_off">Éteindre les deux lumières</button>
+    </form>
+
+    <div class="container_temp">
+        <h2>Température de la piece</h2>
+        {{temp}}
+    </div>
+</body>
+</html>
