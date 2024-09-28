@@ -23,17 +23,13 @@ class MqttConnexion:
         self.client.on_message = self.on_message
         self.client.on_disconnect = self.on_disconnect
 
-    #### Fonction logique SAE
-
     def give_feedback(self, message, feedback_topic):
         """
         Méthode d'envoi d'un message de FEEDBACK sur un TOPIC
-        
-        :message : Message de feedback : default to state_led
+        :message : Message de feedback
         :type message : str
         """
         feed = f"Envoi de feedback : {message} sur le topic {feedback_topic}"
-    
         logging.info(feed)
         publication = self.client.publish(feedback_topic, message)
         
@@ -41,36 +37,27 @@ class MqttConnexion:
             logging.info(f"Message '{message}' publié avec succès sur {feedback_topic}")
         else:
             logging.error(f"Échec de la publication sur {feedback_topic}")
-            
-            
-    def state_led(self, message):
+
+    def state_led(self, message, led_topic="sae301/led"):
         """
-        Méthode d'envoi du message d'état à la LED, si message "ON", alors envoi sur le topic associé le message, sinon "OFF" pour éteindre.
-        
+        Méthode d'envoi du message d'état à la LED
         :message : Message d'état envoyé au topic
         :type message : str
-        
-        :return : Une chaîne de caractères de logging
-        :rtype : str
+        :led_topic : Topic pour la LED
+        :type led_topic : str
         """
-        
-        TOPIC = "sae301/led/status"
-        result = self.client.publish(TOPIC, message)
+        result = self.client.publish(led_topic, message)
         
         if result.rc == mqtt.MQTT_ERR_SUCCESS:
-            logging.info(f"Message '{message}' publié avec succès sur {TOPIC}")
+            logging.info(f"Message '{message}' publié avec succès sur {led_topic}")
         else:
-            logging.error(f"Échec de la publication sur {TOPIC}")
+            logging.error(f"Échec de la publication sur {led_topic}")
 
-    #### Fonction documentation PAHO-MQTT
+
+
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
-        """
-        Callback appelé lorsque le script se connecte au broker
-        :param client : Instance du client
-        :reason_code : Code de retour du client
-        :properties  : Paramètre : default to None
-        """
+        """ Callback appelé lorsque le script se connecte au broker """
         if reason_code == 0:
             logging.info("Connexion au broker réussie :)")
             client.subscribe(self.topic)
@@ -78,55 +65,17 @@ class MqttConnexion:
         else:
             logging.error(f"Erreur de connexion : {reason_code}")
 
-    #### Réaction pour la capture d'un message
-
     def on_message(self, client, userdata, msg):
-        """
-        Callback appelé lorsqu'un message est reçu
-        """
+        """ Callback appelé lorsqu'un message est reçu """
         message = str(msg.payload.decode())
         logging.info(f"{self.USERNAME} : {msg.topic} : {message}")
-        
-        if message == "ON":
-            logging.info("LED allumée")
-            self.state_led("ON")
-        elif message == "OFF":
-            logging.info("LED éteinte")
-            self.state_led("OFF")
-        else:
-            logging.warning(f"Message non reconnu : {message}")
 
     def on_disconnect(self, client, userdata, rc):
-        FIRST_RECONNECT_DELAY = 1
-        RECONNECT_RATE = 2
-        MAX_RECONNECT_COUNT = 12
-        MAX_RECONNECT_DELAY = 60
-
+        """ Callback appelé lors de la déconnexion """
         logging.info(f"Déconnexion avec le code de retour {rc}")
-        
-        reconnect_count, reconnect_delay = 0, FIRST_RECONNECT_DELAY
-        
-        while reconnect_count < MAX_RECONNECT_COUNT:
-            logging.info(f"Tentative de reconnexion dans {reconnect_delay} secondes...")
-            time.sleep(reconnect_delay)
-            
-            try:
-                client.reconnect()
-                logging.info("Reconnecté avec succès !")
-                return
-            except Exception as err:
-                logging.error(f"Échec de la tentative de reconnexion : {err}")
-            
-            reconnect_delay *= RECONNECT_RATE
-            reconnect_delay = min(reconnect_delay, MAX_RECONNECT_DELAY)
-            reconnect_count += 1
-        
-        logging.error("Échec de la reconnexion après plusieurs tentatives. Abandon.")
 
     def handle_connexion(self):
-        """
-        Méthode pour gérer la connexion au broker MQTT et écouter les messages
-        """
+        """ Méthode pour gérer la connexion au broker MQTT et écouter les messages """
         try:
             self.client.connect(self.broker, self.port, 60)
             self.client.loop_forever()
@@ -139,17 +88,17 @@ class MqttConnexion:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    
+
     mqtt_connexion = MqttConnexion(topic="sae301/led/status")
     
     try:
         mqtt_connexion.client.connect(mqtt_connexion.broker, mqtt_connexion.port, 60)
+
+        # Publication de l'état de la LED (message LED_OFF)
+        mqtt_connexion.state_led("LED_OFF", led_topic="sae301/led")
         
-        # Publication de l'état de la LED
-        mqtt_connexion.state_led("ON")
-        
-        # Envoi d'un message de feedback sur un autre topic
-        mqtt_connexion.give_feedback("LED allumée", "sae301/led/log")
+        # Envoi d'un message de feedback sur le topic de statut
+        mqtt_connexion.give_feedback("LED éteinte", "sae301/led/status")
         
         # Boucle pour écouter les messages MQTT
         mqtt_connexion.client.loop_forever()
