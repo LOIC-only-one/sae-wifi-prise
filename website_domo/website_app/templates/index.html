@@ -3,56 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contrôle des lumières</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            color: #333;
-        }
-        button {
-            margin: 5px;
-            padding: 10px 15px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .container_temp {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-        }
-    </style>
+    <meta http-equiv="refresh" content="10">
+    <title>Contrôle des Lumières</title>
 </head>
 <body>
-    <h1>Contrôle des lumières</h1>
+    <h1>Contrôle des Lumières</h1>
     <form method="post">
         {% csrf_token %}
-        
         <button type="submit" name="action" value="lumiere1_on">Allumer Lumière 1</button>
         <button type="submit" name="action" value="lumiere1_off">Éteindre Lumière 1</button>
-        
         <button type="submit" name="action" value="lumiere2_on">Allumer Lumière 2</button>
         <button type="submit" name="action" value="lumiere2_off">Éteindre Lumière 2</button>
-        
-        <button type="submit" name="action" value="all_on">Allumer les deux lumières</button>
-        <button type="submit" name="action" value="all_off">Éteindre les deux lumières</button>
+        <button type="submit" name="action" value="all_on">Tout Allumer</button>
+        <button type="submit" name="action" value="all_off">Tout Éteindre</button>
     </form>
+    <h2>Température : {{ temp }}</h2>
 
-    <div class="container_temp"></div>
-        <h2>Température de la pièce</h2>
-        <p>{{ temp }} °C</p>
-    </div>
+    <h3><a href="{% url 'logout' %}">Se déconnecter</a></h3>
 </body>
 </html>

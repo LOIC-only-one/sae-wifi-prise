@@ -5,8 +5,6 @@
 
 import paho.mqtt.client as mqtt
 import logging
-import time
-import threading
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -15,7 +13,7 @@ class MqttConnexion:
 
     USERNAME = "serveur-rpi"
 
-    def __init__(self, broker: str = "broker.Id00l.eu", port: int = 14022) -> None:
+    def __init__(self, broker: str = "broker.id00l.eu", port: int = 14022) -> None:
         self.broker = broker
         self.port = port
 
@@ -24,14 +22,16 @@ class MqttConnexion:
         self.client.on_message = self.on_message
         self.client.on_disconnect = self.on_disconnect
 
+        self.last_temp = None
+
     def give_feedback(self, message, feedback_topic):
         """Envoi d'un message de feedback sur un TOPIC
         
-        :param message: Message à envoyer sur le topic
-        :type message: str
+        :param message : Message envoyé au topic
+        :type message : str
         
-        :param feedback_topic: Topic sur lequel envoyer le feedback
-        :type feedback_topic: str
+        :param feedback_topic : Topic sur lequel est envoyé le message
+        :type feedback_topic : str
         """
         feed = f"Envoi de feedback : {message} sur le topic {feedback_topic}"
         logging.info(feed)
@@ -45,11 +45,12 @@ class MqttConnexion:
     def state_led(self, message, led_topic):
         """Envoi du message d'état à la LED
         
-        :param message: Message à envoyer sur le topic
-        :type message: str
+        :param message : Message envoyé sur le topic
+        :type message : str
         
-        :param led_topic: Topic sur lequel envoyer le message
-        :type led_topic: str
+        :param led_topic : Topic sur lequel est instructions sont envoyé
+        :type led_topic : str
+        
         """
         result = self.client.publish(led_topic, message)
         
@@ -58,23 +59,20 @@ class MqttConnexion:
         else:
             logging.error(f"Échec de la publication sur {led_topic}")
 
-    def get_temp(self, temp_topic='sae301/temperature'):
-        """Souscription au topic de température
+    def get_temp(self):
+        """Récupère la dernière température reçue
         
-        :param temp_topic: Topic à s'abonner pour la température
-        :type temp_topic: str
+        :return self.last_temp : Température du client mqtt créer
+        :rtype : str
         """
-        self.client.subscribe(temp_topic)
-        logging.info(f"{Fore.YELLOW}Souscription au topic : {temp_topic}{Style.RESET_ALL}")
+        return self.last_temp if self.last_temp else "Température indisponible"   
 
     def handle_light(self, action):
-        """Gestion des differentes actions du site web
+        """Gestion des différentes actions du site web
         
-        :param action : Etat et action envoyé a la LED
-        :type action str
-        
+        :param action : Action générée pour la LED
+        :type action : str
         """
-        
         led_topic_1 = "sae301/led"
         led_topic_2 = "sae301_2/led"
 
@@ -98,38 +96,56 @@ class MqttConnexion:
             self.state_led("LED_OFF", led_topic_1)
             self.state_led("LED_OFF", led_topic_2)
             self.give_feedback("LEDS ETEINTES", "sae301/led/status")
+            
+########################################################################
+########################################################################
+########################################################################            
+
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
-        """Callback appelé lors de la connexion au broker"""
+        """Callback appelé lors de la connexion au broker BY phaho
+        
+        :param client : Client MQTT créer dans __init__
+        :param resean_code : Code de retour d'une requete du client
+        
+        :type reason_code : str
+        
+        """
         if reason_code == 0:
             logging.info("Connexion au broker réussie :)")
-            client.subscribe("sae301/temperature")  # Subscribe to temperature topic
+            client.subscribe("sae301/temperature")
             logging.info(f"{Fore.YELLOW}Abonné au topic : sae301/temperature{Style.RESET_ALL}")
         else:
             logging.error(f"Erreur de connexion : {reason_code}")
 
     def on_message(self, client, userdata, msg):
-        """Callback appelé lorsqu'un message est reçu"""
+        """Callback appelé lorsqu'un message est reçu BY phaho
+        
+        :param msg : Message reçu par le client
+        :type msg : str
+        
+        """
         message = str(msg.payload.decode())
         logging.info(f"{self.USERNAME} : {msg.topic} : {message}")
 
+        if msg.topic == 'sae301/temperature':
+            self.last_temp = message
+
     def on_disconnect(self, client, userdata, rc):
-        """Callback appelé lors de la déconnexion"""
+        """Callback appelé lors de la déconnexion BY phaho
+        
+        REFONT_en_COUR
+        
+        """
         logging.info(f"Déconnexion avec le code de retour {rc}")
 
     def handle_connexion(self):
         """Gère la connexion au broker MQTT et écoute les messages"""
         try:
             self.client.connect(self.broker, self.port, 60)
-            self.client.loop_forever()
+            self.client.loop_start()
         except Exception as e:
             logging.error(f"Erreur lors de la connexion ou pendant la réception des messages : {str(e)}")
-        finally:
-            self.client.disconnect()
-            logging.info("Déconnecté du broker")
-
-
-
 ########################################################################
 ########################################################################
 ########################################################################
