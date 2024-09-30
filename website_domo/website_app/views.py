@@ -6,6 +6,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .forms import Prise1FormHoraire
+from .models import PlageHoraire
 
 def user_login(request):
     """
@@ -64,9 +65,8 @@ from django.utils import timezone
 
 
 ### Création d'un plage horaire
-
 @login_required(login_url='/login/')
-def plage_horaire(request, mqtt_connexion=mqtt_connexion):
+def plage_horaire(request):
     """Vue de la page gestion des plages horaires..."""
     
     now = timezone.now().strftime("%H:%M:%S")
@@ -79,13 +79,24 @@ def plage_horaire(request, mqtt_connexion=mqtt_connexion):
             nom = form1.cleaned_data["nom_plage"]
             heure_fin = form1.cleaned_data["heure_fin"]
             heure_debut = form1.cleaned_data["heure_debut"]
-        
-        return render(request, "plage_horaires.html", {"form1": form1})
+            
+            PlageHoraire.objects.create(
+                led=choice,
+                nom_plage=nom,
+                heure_debut=heure_debut,
+                heure_fin=heure_fin
+            )
+            
+            
+            ### Logique MQTT si heure
+            
+            return redirect('plage_horaire')
     
     else:
-        form1 = Prise1FormHoraire()  # Formulaire vide pour une requête GET
+        form1 = Prise1FormHoraire()
     
-    return render(request, "plage_horaires.html", {"form1": form1})
+    plage_objects = PlageHoraire.objects.all()
+    return render(request, "plage_horaires.html", {"form1": form1, "plage_objects": plage_objects})
 
 ## Modification plage horaire
 

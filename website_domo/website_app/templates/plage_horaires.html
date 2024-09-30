@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Gestion des plages horaires</title>
 </head>
 <body>
     <form action="/plage_horaires/" method="post">
@@ -11,5 +11,22 @@
         {{ form1 }}
         <input type="submit" value="Submit">
     </form>
+
+    <h1>Liste des plages horaires :</h1>
+
+    <p>Chercher une plage horaire</p>
+
+    {% if plage_objects %}
+        {% for plage in plage_objects %}
+            <p><strong>{{ plage.nom_plage }}</strong></p>
+            <p>LED: {{ plage.led }}</p>
+            <p>Début: {{ plage.heure_debut }}</p>
+            <p>Fin: {{ plage.heure_fin }}</p>
+            <button>Supprimer</button>
+            <button>Modifier</button>
+        {% endfor %}
+    {% else %}
+        <p>Aucune plage horaire trouvée.</p>
+    {% endif %}
 </body>
 </html>
