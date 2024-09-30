@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app/StylePlage.css' %}">
     <title>Gestion des plages horaires</title>
 </head>
 <body>
+    <div class="box">
+    <div class="box1">
     <form action="/plage_horaires/" method="post">
         {% csrf_token %}
         {{ form1 }}
         <input type="submit" value="Submit">
     </form>
-
-    <h1>Liste des plages horaires :</h1>
-
-    <p>Chercher une plage horaire</p>
-
+    </div>    
     {% if plage_objects %}
         {% for plage in plage_objects %}
+        <div class="box2">
             <p><strong>{{ plage.nom_plage }}</strong></p>
-            <p>LED: {{ plage.led }}</p>
+            <p>💡 : {{ plage.led }}</p>
             <p>Début: {{ plage.heure_debut }}</p>
             <p>Fin: {{ plage.heure_fin }}</p>
-            <button>Supprimer</button>
-            <button>Modifier</button>
+            <a href="{% url 'plage_modifier' plage.id %}">Modifier</a>
+            <a href="{% url 'plage_delete' plage.id %}">Supprimer</a>            
+        </div>
         {% endfor %}
     {% else %}
         <p>Aucune plage horaire trouvée.</p>
     {% endif %}
+</div>
+
+    {% load static %}
+<script src="{% static 'app/script.js' %}"></script>
 </body>
 </html>

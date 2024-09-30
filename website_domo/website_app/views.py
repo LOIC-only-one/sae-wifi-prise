@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .mqtt_lib_sae import MqttConnexion
 import threading
 import logging
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from .forms import Prise1FormHoraire
+from .forms import Prise1ModelForm
 from .models import PlageHoraire
 
 def user_login(request):
@@ -72,7 +72,7 @@ def plage_horaire(request):
     now = timezone.now().strftime("%H:%M:%S")
     
     if request.method == 'POST':
-        form1 = Prise1FormHoraire(request.POST)
+        form1 = Prise1ModelForm(request.POST)
          
         if form1.is_valid():
             choice = form1.cleaned_data["led"]
@@ -93,21 +93,25 @@ def plage_horaire(request):
             return redirect('plage_horaire')
     
     else:
-        form1 = Prise1FormHoraire()
+        form1 = Prise1ModelForm()
     
     plage_objects = PlageHoraire.objects.all()
     return render(request, "plage_horaires.html", {"form1": form1, "plage_objects": plage_objects})
+def plage_modifier(request, id):
+    plage = get_object_or_404(PlageHoraire, pk=id)  # Utilisation du modèle
+    if request.method == "POST":
+        form = Prise1ModelForm(request.POST, instance=plage)  # Utilisation du ModelForm
+        if form.is_valid():
+            form.save()
+            return redirect('plage_horaire')
+    else:
+        form = Prise1ModelForm(instance=plage)
+    return render(request, 'plage_modifieur.html', {'form': form})
 
-## Modification plage horaire
-
-def plage_horaire_update(self,id):
-    pass
-
-## Supression d'une plage horaire
-def plage_horaire_del(self,id):
-    pass
-
-
+def plage_delete(request, id):
+    obj = get_object_or_404(PlageHoraire, pk=id)  # Utilisation du modèle ici, pas du formulaire
+    obj.delete()
+    return redirect('plage_horaire')  # Redirection après la suppression
 
 #############################################################
 #############################################################
