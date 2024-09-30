@@ -9,30 +9,31 @@
 </head>
 <body>
     <div class="box">
-    <div class="box1">
-    <form action="/plage_horaires/" method="post">
-        {% csrf_token %}
-        {{ form1 }}
-        <input type="submit" value="Submit">
-    </form>
-    </div>    
-    {% if plage_objects %}
-        {% for plage in plage_objects %}
-        <div class="box2">
-            <p><strong>{{ plage.nom_plage }}</strong></p>
-            <p>💡 : {{ plage.led }}</p>
-            <p>Début: {{ plage.heure_debut }}</p>
-            <p>Fin: {{ plage.heure_fin }}</p>
-            <a href="{% url 'plage_modifier' plage.id %}">Modifier</a>
-            <a href="{% url 'plage_delete' plage.id %}">Supprimer</a>            
-        </div>
-        {% endfor %}
-    {% else %}
-        <p>Aucune plage horaire trouvée.</p>
-    {% endif %}
-</div>
+        <div class="box1">
+            <form action="{% url 'plage_horaire' %}" method="post">  <!-- Use URL tag for better practice -->
+                {% csrf_token %}
+                {{ form1.as_p }}  <!-- Utilisez form1 au lieu de form -->
+                <input type="submit" value="Submit">
+            </form>
+        </div>    
 
-    {% load static %}
-<script src="{% static 'app/script.js' %}"></script>
+        {% if plage_objects %}
+            {% for plage in plage_objects %}
+            <div class="box2">
+                <p><strong>{{ plage.nom_plage }}</strong></p>
+                <p>💡 : {{ plage.led }}</p>
+                <p>Début: {{ plage.heure_debut }}</p>
+                <p>Fin: {{ plage.heure_fin }}</p>
+                <p>Action : {{plage.actions }}</p>
+                <a href="{% url 'plage_modifier' plage.id %}">Modifier</a>
+                <a href="{% url 'plage_delete' plage.id %}">Supprimer</a>            
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucune plage horaire trouvée.</p>
+        {% endif %}
+    </div>
+
+    <script src="{% static 'app/script.js' %}"></script>
 </body>
 </html>
