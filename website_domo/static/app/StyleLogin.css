@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Gnome&display=swap');
+
+
+@keyframes fadeIn {
+    0% { opacity: 0; filter: blur(50px);}
+    100% { opacity: 1; filter: blur(0px); }
+  }
+
+html
+{
+    animation: fadeIn 0.5s ease-in-out forwards; 
+}  
+
+body
+{
+    background-image: url(background.jpg);
+    background-size: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 95vh;
+    transition: all 0.5s;
+    font-family: 'Gnome', sans-serif;
+}
+
+p
+{
+    font-family: 'Gnome', sans-serif;
+}
+
+.box {
+    opacity: 0; 
+  }
+
+.box
+{
+    background-color: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);
+    border-radius: 30px;
+    backdrop-filter: blur(15px);
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s;
+    padding: 2%;
+    animation: fadeIn 1s ease-in-out forwards; 
+    position: relative;
+    transition-duration: 150ms;
+    transition-property: transform, box-shadow;
+    transition-timing-function: ease-out;
+    transform: rotate3d(0);
+}
+
+form
+{
+    background-color: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+    backdrop-filter: blur(15px);
+    width: 80%;
+    justify-content: center;
+    transition: all 0.5s;
+    animation: fadeIn 1s ease-in-out forwards; 
+    position: relative;
+    transition-duration: 150ms;
+    transition-property: transform, box-shadow;
+    transition-timing-function: ease-out;
+    transform: rotate3d(0);
+}
+
+.box:hover
+{
+    transition: all 0.5s;
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 1);  
+    transition-duration: 50ms;
+    box-shadow: 0 5px 20px 5px #00000044;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+    transform: translateZ(0);
+    transform-origin: 50% 50;
+}
+
+input
+{
+    margin: 5%;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.5s;
+    font-family: 'Gnome', sans-serif;
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
+    width: 30%;
+}
+
+input:hover
+{
+    transition: all 0.5s;
+    background: white;
+    color: black;
+    transform: scale(1.15);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+button
+{
+    margin: 5%;
+    padding: 2%;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.5s;
+    font-family: 'Gnome', sans-serif;
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
+}
+
+
+button:hover
+{
+    transition: all 0.5s;
+    background: white;
+    color: black;
+    transform: scale(1.15);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+    cursor:pointer;
+}
+
+h2, label
+{
+    margin: 3%;
+    color: white;
+    font-family: 'Gnome', sans-serif;
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
+}
+

@@ -4,7 +4,8 @@ from .mqtt_lib_sae import MqttConnexion
 import threading
 import logging
 from django.contrib.auth.decorators import login_required
-
+from django.utils import timezone
+from .forms import Prise1FormHoraire
 
 def user_login(request):
     """
@@ -47,6 +48,9 @@ threading.Thread(target=run_mqtt, daemon=True).start()
 @login_required(login_url='/login/')
 def home(request):
     """Vue d'acceuil gestion de la température et des lumières avec MQTT"""
+    
+    now = timezone.now().strftime("%H:%M:%S")
+    
     if request.method == "POST":
         action = request.POST.get('action')
         if action:
@@ -54,7 +58,45 @@ def home(request):
     
     temp = mqtt_connexion.get_temp()
 
-    return render(request, "index.html", {"temp": temp})
+    return render(request, "index.html", {"temp": temp, "time": now,})
+
+from django.utils import timezone
+
+
+### Création d'un plage horaire
+
+@login_required(login_url='/login/')
+def plage_horaire(request, mqtt_connexion=mqtt_connexion):
+    """Vue de la page gestion des plages horaires..."""
+    
+    now = timezone.now().strftime("%H:%M:%S")
+    
+    if request.method == 'POST':
+        form1 = Prise1FormHoraire(request.POST)
+         
+        if form1.is_valid():
+            choice = form1.cleaned_data["led"]
+            nom = form1.cleaned_data["nom_plage"]
+            heure_fin = form1.cleaned_data["heure_fin"]
+            heure_debut = form1.cleaned_data["heure_debut"]
+        
+        return render(request, "plage_horaires.html", {"form1": form1})
+    
+    else:
+        form1 = Prise1FormHoraire()  # Formulaire vide pour une requête GET
+    
+    return render(request, "plage_horaires.html", {"form1": form1})
+
+## Modification plage horaire
+
+def plage_horaire_update(self,id):
+    pass
+
+## Supression d'une plage horaire
+def plage_horaire_del(self,id):
+    pass
+
+
 
 #############################################################
 #############################################################
