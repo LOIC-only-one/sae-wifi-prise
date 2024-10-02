@@ -81,12 +81,20 @@ def plage_horaire(request):
     return render(request, 'plage_horaires.html', {'form1': form1, 'plages': plages})
 
 def check_time(mqtt_connexion):
+    led1_on = False
+    led2_on = False
+
     while True:
         now = timezone.localtime(timezone.now(), paris_tz).strftime("%H:%M")
         logging.debug(f"Heure actuelle: {now}")
 
         plages = PlageHoraire.objects.all()
-        led1_on = False
+
+        # Variables d'état pour suivre le dernier état des LEDs
+        last_led1_state = led1_on
+        last_led2_state = led2_on
+
+        led1_on = False  # Réinitialiser l'état à chaque itération
         led2_on = False
 
         for plage in plages:
@@ -104,18 +112,18 @@ def check_time(mqtt_connexion):
                         led2_on = True
                         logging.info(f"Action {plage.actions} pour la LED {plage.led} à {now}. LED {plage.led} sera allumée.")
 
-            ### On peut ajouter ici la regle des deux led
-        if led1_on:
+        # Vérifier l'état des LEDs et publier uniquement si l'état a changé
+        if led1_on and not last_led1_state:
             mqtt_connexion.publication("sae301/led", "LED_ON")
             logging.info("LED1 est allumée.")
-        else:
+        elif not led1_on and last_led1_state:
             mqtt_connexion.publication("sae301/led", "LED_OFF")
             logging.info("LED1 est éteinte.")
 
-        if led2_on:
+        if led2_on and not last_led2_state:
             mqtt_connexion.publication("sae301_2/led", "LED_ON")
             logging.info("LED2 est allumée.")
-        else:
+        elif not led2_on and last_led2_state:
             mqtt_connexion.publication("sae301_2/led", "LED_OFF")
             logging.info("LED2 est éteinte.")
 

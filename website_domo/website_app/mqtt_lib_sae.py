@@ -55,7 +55,7 @@ class MqttConnexion:
                 self.handle_light(f"lumiere{plage.led[-1]}_off")
             else:
                 self.handle_light(f"lumiere{plage.led[-1]}_on")
-        
+
     def monitor_plages(self, plages):
         def run():
             while True:
@@ -71,19 +71,19 @@ class MqttConnexion:
         led_topic_2 = "sae301_2/led"
 
         if action == "lumiere1_on":
-            self.publish("LED_ON", led_topic_1)
+            self.publication(led_topic_1, "LED_ON")
         elif action == "lumiere1_off":
-            self.publish("LED_OFF", led_topic_1)
+            self.publication(led_topic_1, "LED_OFF")
         elif action == "lumiere2_on":
-            self.publish("LED_ON", led_topic_2)
+            self.publication(led_topic_2, "LED_ON")
         elif action == "lumiere2_off":
-            self.publish("LED_OFF", led_topic_2)
+            self.publication(led_topic_2, "LED_OFF")
         elif action == "all_on":
-            self.publish("LED_ON", led_topic_1)
-            self.publish("LED_ON", led_topic_2)
+            self.publication(led_topic_1, "LED_ON")
+            self.publication(led_topic_2, "LED_ON")
         elif action == "all_off":
-            self.publish("LED_OFF", led_topic_1)
-            self.publish("LED_OFF", led_topic_2)
+            self.publication(led_topic_1, "LED_OFF")
+            self.publication(led_topic_2, "LED_OFF")
 
     def publication(self, topic, message):
         self.client.publish(topic, message)
