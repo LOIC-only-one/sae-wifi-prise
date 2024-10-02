@@ -35,11 +35,7 @@ p
 
 .box
 {
-    background-color: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);
-    border-radius: 30px;
-    backdrop-filter: blur(15px);
+
     width: 35%;
     display: flex;
     flex-direction: column;
@@ -47,7 +43,7 @@ p
     align-items: center;
     justify-content: center;
     transition: all 0.5s;
-    padding: 2%;
+    padding: 5%;
     animation: fadeIn 1s ease-in-out forwards; 
     position: relative;
     transition-duration: 150ms;
@@ -58,11 +54,13 @@ p
 
 form
 {
+    transition: all 0.5s;
+    padding: 5%;
     background-color: rgba(255, 255, 255, 0.01);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.3);
     border-radius: 30px;
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(35px);
     width: 80%;
     justify-content: center;
     transition: all 0.5s;
@@ -74,12 +72,17 @@ form
     transform: rotate3d(0);
 }
 
+form:hover
+{
+    transition: all 0.5s;
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
+    transform: scale(1.03);
+}
+
 .box:hover
 {
     transition: all 0.5s;
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 1);  
     transition-duration: 50ms;
-    box-shadow: 0 5px 20px 5px #00000044;
     backface-visibility: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
     transform: translateZ(0);
@@ -88,7 +91,8 @@ form
 
 input
 {
-    margin: 5%;
+    padding: 1%;
+    margin: 3%;
     border-radius: 5px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
@@ -111,7 +115,7 @@ input:hover
 
 button
 {
-    margin: 5%;
+    margin: 2%;
     padding: 2%;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -141,4 +145,22 @@ h2, label
     font-family: 'Gnome', sans-serif;
     text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
 }
+
+.login
+{
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.015);
+    transition: all 0.5s;
+    padding: 2%;
+    backdrop-filter: blur(35px);
+}
+
+.login:hover
+{
+    transition: all 0.5s;
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
+    transform: scale(1.1);
+}
+
 

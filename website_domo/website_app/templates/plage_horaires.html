@@ -8,6 +8,8 @@
     <title>Gestion des plages horaires</title>
 </head>
 <body>
+    <div class="container">
+    <h2 class="iconhoraire">🕑</h2>
     <div class="box">
         <div class="box1">
             <form action="{% url 'plage_horaire' %}" method="post">  <!-- Use URL tag for better practice -->
@@ -15,25 +17,35 @@
                 {{ form1.as_p }}  <!-- Utilisez form1 au lieu de form -->
                 <input type="submit" value="Submit">
             </form>
-        </div>    
+        </div>
 
-        {% if plage_objects %}
-            {% for plage in plage_objects %}
+
+        {% if plages %}
+            {% for plage in plages %}
             <div class="box2">
-                <p><strong>{{ plage.nom_plage }}</strong></p>
+                <div class="containernomplage">
+                <p class="nomplage"><strong>{{ plage.nom_plage }}</strong></p>
+                </div>
+                <div class="boxplage">
                 <p>💡 : {{ plage.led }}</p>
                 <p>Début: {{ plage.heure_debut }}</p>
                 <p>Fin: {{ plage.heure_fin }}</p>
                 <p>Action : {{plage.actions }}</p>
-                <a href="{% url 'plage_modifier' plage.id %}">Modifier</a>
-                <a href="{% url 'plage_delete' plage.id %}">Supprimer</a>            
+                <div class="containernomplage">
+                <a class="buttonbox2" href="{% url 'plage_modifier' plage.id %}">Modifier</a>
+                <a class="buttonbox2" href="{% url 'plage_delete' plage.id %}">Supprimer</a>            
+            </div>
+            </div>
             </div>
             {% endfor %}
+            <div class="containerback">
+            <a class="buttonback" href="{% url 'home' %}">RETOUR</a>
+            </div>
         {% else %}
             <p>Aucune plage horaire trouvée.</p>
         {% endif %}
     </div>
-
+</div>
     <script src="{% static 'app/script.js' %}"></script>
 </body>
 </html>

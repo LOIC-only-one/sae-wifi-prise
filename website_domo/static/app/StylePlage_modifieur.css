@@ -6,14 +6,6 @@
     100% { opacity: 1; filter: blur(0px); }
   }
 
-.container
-{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
 
 body
 {
@@ -30,6 +22,15 @@ body
     color: white;
 }
 
+.container
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
 p
 {
     font-family: 'Gnome', sans-serif;
@@ -41,15 +42,14 @@ p
 
 .box
 {
-    width: 80%;
     padding: 2%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     background-color: rgba(255, 255, 255, 0.010);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);
     border-radius: 35px;
-    backdrop-filter: blur(35px);
+    backdrop-filter: blur(15px);
     transition: all 0.5s;
     animation: fadeIn 0.5s ease-in-out forwards; 
     position: relative;
@@ -59,7 +59,30 @@ p
     transform: rotate3d(0);
 }
 
+form
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
 
+h2
+{
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.015);
+    transition: all 0.5s;
+    padding: 1%;
+    backdrop-filter: blur(35px);
+}
+
+h2:hover
+{
+    transition: all 0.5s;
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
+    transform: scale(1.1);
+}
 
 .box:hover
 {
@@ -72,100 +95,8 @@ p
     transform-origin: 50% 50;
 }
 
-.box1
-{
-    transition: all 0.5s;
-    margin-right: 2%;
-    width: 20%;
-    padding: 2%;
-    background-color: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.4);
-    border-radius: 25px;
-    animation: fadeIn 0.5s ease-in-out forwards; 
-
-}
-
-.boxplage
-{
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.015);
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.4);
-    transition: all 0.5s;
-    padding: 10%;
-    backdrop-filter: blur(35px);
-}
-
-.boxplage:hover
-{
-    transition: all 0.5s;
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-    transform: scale(1.05);
-}
-
-
-.nomplage
-{
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.015);
-    transition: all 0.5s;
-    padding: 5%;
-    backdrop-filter: blur(35px);
-}
-
-.nomplage:hover
-{
-    transition: all 0.5s;
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-    transform: scale(1.1);
-}
-
-.containernomplage
-{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-.box1:hover
-{
-    transition: all 0.5s;
-    transform: scale(1.05);
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-    backface-visibility: hidden;
-    -webkit-font-smoothing: subpixel-antialiased;
-    transform-origin: 50% 50;
-}
-
-.box2
-{
-    transition: all 0.5s;
-    width: 20%;
-    margin-left: 2%;
-    padding: 2%;
-    background-color: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.4);
-    border-radius: 25px;
-    animation: fadeIn 0.5s ease-in-out forwards; 
-}
-
-.box2:hover
-{
-    transition: all 0.5s;
-    transform: scale(1.05);
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-    backface-visibility: hidden;
-    -webkit-font-smoothing: subpixel-antialiased;
-    transform-origin: 50% 50;
-}
-
 input
 {
-    margin-top: 3%;
     padding: 2%;
     border-radius: 5px;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -188,7 +119,23 @@ input:hover
     box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
 }
 
+.form-group
+{
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.015);
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s;
+    padding: 10%;
+    backdrop-filter: blur(35px);
+}
 
+.form-group:hover
+{
+    transition: all 0.5s;
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
+    transform: scale(1.05);
+}
 
 select
 {
@@ -215,12 +162,10 @@ select:hover
     box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
 }
 
-
-
-.buttonbox2
+button
 {
-    padding: 5%;
-    margin: 3%;
+    margin: 10%;
+    padding: 6%;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
@@ -228,10 +173,37 @@ select:hover
     transition: all 0.5s;
     font-family: 'Gnome', sans-serif;
     text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.4);  
+}
+
+
+button:hover
+{
+    transition: all 0.5s;
+    background: white;
+    color: black;
+    transform: scale(1.15);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+    cursor:pointer;
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.6);  
+}
+
+a
+{
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
+    padding: 6%;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.5s;
+    font-family: 'Gnome', sans-serif;
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.4);
     text-decoration: none;
 }
 
-.buttonbox2:hover
+a:hover
 {
     transition: all 0.5s;
     background: white;
@@ -240,58 +212,7 @@ select:hover
     backface-visibility: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
     cursor:pointer;
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-}
-
-.buttonback
-{
-    padding: 10%;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
-    transition: all 0.5s;
-    font-family: 'Gnome', sans-serif;
-    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
-    text-decoration: none;
-}
-
-.buttonback:hover
-{
-    transition: all 0.5s;
-    background: white;
-    color: black;
-    transform: scale(1.05);
-    backface-visibility: hidden;
-    -webkit-font-smoothing: subpixel-antialiased;
-    cursor:pointer;
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-}
-
-.containerback
-{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-left: 2%;
-}
-
-.iconhoraire
-{
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.015);
-    transition: all 0.5s;
-    padding: 1%;
-    backdrop-filter: blur(35px);
-}
-
-.iconhoraire:hover
-{
-    transition: all 0.5s;
-    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.8);  
-    transform: scale(1.1);
+    box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.6);  
 }
 
 
