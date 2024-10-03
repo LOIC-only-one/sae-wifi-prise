@@ -37,18 +37,47 @@ def user_logout(request):
 
 paris_tz = pytz.timezone('Europe/Paris')
 
+light_states = {
+## faut pas le supprimer il permet de garder les etats en mémoire et ne les reset pas a chaque POST
+    "lumiere1_status": "off",
+    "lumiere2_status": "off"
+}
+
 @login_required(login_url='/login/')
 def home(request):
-    now = timezone.localtime(timezone.now(), paris_tz).strftime("%H:%M:%S")
+    now = timezone.localtime(timezone.now()).strftime("%H:%M:%S")
     
     if request.method == "POST":
         action = request.POST.get('action')
+        
         if action:
             mqtt_connexion.handle_light(action)
+            
+            if action == "lumiere1_on":
+                light_states["lumiere1_status"] = "on"
+            elif action == "lumiere1_off":
+                light_states["lumiere1_status"] = "off"
+            elif action == "lumiere2_on":
+                light_states["lumiere2_status"] = "on"
+            elif action == "lumiere2_off":
+                light_states["lumiere2_status"] = "off"
+            elif action == "all_on":
+                light_states["lumiere1_status"] = "on"
+                light_states["lumiere2_status"] = "on"
+            elif action == "all_off":
+                light_states["lumiere1_status"] = "off"
+                light_states["lumiere2_status"] = "off"
     
     temp = mqtt_connexion.get_temp()
 
-    return render(request, "index.html", {"temp": temp, "time": now})
+    context = {
+        "temp": temp,
+        "time": now,
+        "lumiere1_status": light_states["lumiere1_status"],
+        "lumiere2_status": light_states["lumiere2_status"],
+    }
+
+    return render(request, "index.html", context)
 
 @login_required(login_url='/login/')
 def plage_horaire(request):
@@ -90,11 +119,10 @@ def check_time(mqtt_connexion):
 
         plages = PlageHoraire.objects.all()
 
-        # Variables d'état pour suivre le dernier état des LEDs
         last_led1_state = led1_on
         last_led2_state = led2_on
 
-        led1_on = False  # Réinitialiser l'état à chaque itération
+        led1_on = False
         led2_on = False
 
         for plage in plages:
@@ -112,7 +140,7 @@ def check_time(mqtt_connexion):
                         led2_on = True
                         logging.info(f"Action {plage.actions} pour la LED {plage.led} à {now}. LED {plage.led} sera allumée.")
 
-        # Vérifier l'état des LEDs et publier uniquement si l'état a changé
+
         if led1_on and not last_led1_state:
             mqtt_connexion.publication("sae301/led", "LED_ON")
             logging.info("LED1 est allumée.")
@@ -127,9 +155,13 @@ def check_time(mqtt_connexion):
             mqtt_connexion.publication("sae301_2/led", "LED_OFF")
             logging.info("LED2 est éteinte.")
 
+
+        ## Ajouter la logique des deux leds en meme temps
+        
         time.sleep(15)
 
 threading.Thread(target=check_time, args=(mqtt_connexion,), daemon=True).start()
+
 
 def plage_modifier(request, id):
     plage = get_object_or_404(PlageHoraire, pk=id)

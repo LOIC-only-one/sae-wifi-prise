@@ -11,36 +11,53 @@
 <body>
     <div class="box">
         <div class="containertop" id="containertop">
-            <p class="heure" id="heure">🕑 {{time}} </p>
+            <p class="heure" id="heure">🕑 {{ time }} </p>
             <a class="plage_deconnect" href="{% url 'plage_horaire' %}">⏲️</a>
             <a class="plage_deconnect" href="{% url 'logout' %}">Se déconnecter 🚪</a>
         </div>    
-    <div class="container">
-    <form method="post">
-        {% csrf_token %}
-        <div class="box2">
-            <h3>💡I 1</h3>
-            <button type="submit" name="action" value="lumiere1_on">ON</button>
-            <button type="submit" name="action" value="lumiere1_off">OFF</button>
-            </div>
+
+        <div class="container">
+        <form method="post">
+            {% csrf_token %}
             <div class="box2">
-            <h3>💡I 2</h3>
-            <button type="submit" name="action" value="lumiere2_on">ON</button>
-            <button type="submit" name="action" value="lumiere2_off">OFF</button>
+                <h3>💡 I 1</h3>
+                <button type="submit" name="action" value="lumiere1_on" 
+                        class="{% if lumiere1_status == 'on' %}btn-on{% else %}btn-off{% endif %}">
+                    ON
+                </button>
+                <button type="submit" name="action" value="lumiere1_off" 
+                        class="{% if lumiere1_status == 'off' %}btn-on{% else %}btn-off{% endif %}">
+                    OFF
+                </button>
             </div>
+            
             <div class="box2">
-            <h3>💡I 1/2</h3>
-            <button type="submit" name="action" value="all_on">ON</button>
-            <button type="submit" name="action" value="all_off">OFF</button>
+                <h3>💡 I 2</h3>
+                <button type="submit" name="action" value="lumiere2_on" 
+                        class="{% if lumiere2_status == 'on' %}btn-on{% else %}btn-off{% endif %}">
+                    ON
+                </button>
+                <button type="submit" name="action" value="lumiere2_off" 
+                        class="{% if lumiere2_status == 'off' %}btn-on{% else %}btn-off{% endif %}">
+                    OFF
+                </button>
+            </div>
+            
+        <!-- Faut ajouter encore la logique pour les boutons on et off du ALL -->
+            <div class="box2">
+                <h3>💡 I 1/2</h3>
+                <button type="submit" name="action" value="all_on">ON</button>
+                <button type="submit" name="action" value="all_off">OFF</button>
+            </div>
+        </form>
         </div>
-    </form>
-</div>
-<div class="box3">
-    <div class="boxtemperature">
-        <p>🌡️{{ temp }}°C</p>
-    </div>
-</div>
-    </div>
+
+        <div class="box3">
+            <div class="boxtemperature">
+                <p>🌡️{{ temp }}°C</p>
+            </div>
+        </div>
+
     <script src="{% static 'app/script.js' %}"></script>
 </body>
 </html>

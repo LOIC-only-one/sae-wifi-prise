@@ -76,6 +76,10 @@ form
     margin: 1%;
 }
 
+.btn-on {
+    background-color: blue;
+}
+
 .box2
 {
     display: flex;
