@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gnome&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google Sans&display=swap');
 
 
 @keyframes fadeIn {
@@ -17,12 +17,12 @@ body
     justify-content: center;
     height: 95vh;
     transition: all 0.5s;
-    font-family: 'Gnome', sans-serif;
+    font-family: 'Google Sans', sans-serif;
 }
 
 p
 {
-    font-family: 'Gnome', sans-serif;
+    font-family: 'Google Sans', sans-serif;
 }
 
 .box, .box2, .box3 {
@@ -76,9 +76,15 @@ form
     margin: 1%;
 }
 
-.btn-on {
-    background-color: blue;
+.btn-enable-on {
+    background-color: rgba(0, 255, 0, 0.2);
 }
+
+.btn-enable-off {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+
 
 .box2
 {
@@ -176,7 +182,7 @@ button
     color: white;
     background: rgba(255, 255, 255, 0.1);
     transition: all 0.5s;
-    font-family: 'Gnome', sans-serif;
+    font-family: 'Google Sans', sans-serif;
     box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.3);
     text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
 }
@@ -204,7 +210,7 @@ button:hover
 h3
 {
     color: white;
-    font-family: 'Gnome', sans-serif;
+    font-family: 'Google Sans', sans-serif;
     text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
 }
 
@@ -243,7 +249,7 @@ p
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
     background: rgba(255, 255, 255, 0.1);
-    font-family: 'Gnome', sans-serif;
+    font-family: 'Google Sans', sans-serif;
     box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.3);
     text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.8);
     text-decoration: none;

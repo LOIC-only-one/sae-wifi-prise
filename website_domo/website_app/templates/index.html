@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="10">
+    <title>Contrôle des Lumières</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'app/StyleIndex.css' %}">
-    <title>Contrôle des Lumières</title>
 </head>
 <body>
     <div class="box">
@@ -17,47 +16,78 @@
         </div>    
 
         <div class="container">
-        <form method="post">
-            {% csrf_token %}
-            <div class="box2">
-                <h3>💡 I 1</h3>
-                <button type="submit" name="action" value="lumiere1_on" 
-                        class="{% if lumiere1_status == 'on' %}btn-on{% else %}btn-off{% endif %}">
-                    ON
-                </button>
-                <button type="submit" name="action" value="lumiere1_off" 
-                        class="{% if lumiere1_status == 'off' %}btn-on{% else %}btn-off{% endif %}">
-                    OFF
-                </button>
-            </div>
-            
-            <div class="box2">
-                <h3>💡 I 2</h3>
-                <button type="submit" name="action" value="lumiere2_on" 
-                        class="{% if lumiere2_status == 'on' %}btn-on{% else %}btn-off{% endif %}">
-                    ON
-                </button>
-                <button type="submit" name="action" value="lumiere2_off" 
-                        class="{% if lumiere2_status == 'off' %}btn-on{% else %}btn-off{% endif %}">
-                    OFF
-                </button>
-            </div>
-            
-        <!-- Faut ajouter encore la logique pour les boutons on et off du ALL -->
-            <div class="box2">
-                <h3>💡 I 1/2</h3>
-                <button type="submit" name="action" value="all_on">ON</button>
-                <button type="submit" name="action" value="all_off">OFF</button>
-            </div>
-        </form>
+            <form method="post">
+                {% csrf_token %}
+                <!-- Lumière I 1 -->
+                <div class="box2">
+                    <h3>💡 I 1</h3>
+                    <button type="submit" name="action" value="lumiere1_on" 
+                            class="{% if lumiere1_status == 'on' %}btn-enable-on{% else %}btn-off{% endif %}">
+                        ON
+                    </button>
+                    <button type="submit" name="action" value="lumiere1_off" 
+                            class="{% if lumiere1_status == 'off' %}btn-enable-off{% else %}btn-off{% endif %}">
+                        OFF
+                    </button>
+                </div>
+
+                <!-- Lumière I 2 -->
+                <div class="box2">
+                    <h3>💡 I 2</h3>
+                    <button type="submit" name="action" value="lumiere2_on" 
+                            class="{% if lumiere2_status == 'on' %}btn-enable-on{% else %}btn-off{% endif %}">
+                        ON
+                    </button>
+                    <button type="submit" name="action" value="lumiere2_off" 
+                            class="{% if lumiere2_status == 'off' %}btn-enable-off{% else %}btn-off{% endif %}">
+                        OFF
+                    </button>
+                </div>
+
+                <!-- Lumières I 1/2 -->
+                <div class="box2">
+                    <h3>💡 I 1/2</h3>
+                    <button type="submit" name="action" value="all_on" 
+                            class="{% if lumiere1_status == 'on' and lumiere2_status == 'on' %}btn-enable-on{% else %}btn-off{% endif %}">
+                        ON
+                    </button>
+                    <button type="submit" name="action" value="all_off" 
+                            class="{% if lumiere1_status == 'off' and lumiere2_status == 'off' %}btn-enable-off{% else %}btn-off{% endif %}">
+                        OFF
+                    </button>
+                </div>
+            </form>
         </div>
 
         <div class="box3">
-            <div class="boxtemperature">
+            <div class="boxtemperature" id="temperature_div">
                 <p>🌡️{{ temp }}°C</p>
             </div>
         </div>
 
-    <script src="{% static 'app/script.js' %}"></script>
+
+    <!-- Code récuperé d'un site internet-->
+        <script>
+            function refreshData() {
+                fetch(window.location.href)
+                    .then(response => response.text())
+                    .then(data => {
+
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(data, 'text/html');
+
+                        // Met à jour l'heure
+                        const newTime = doc.querySelector('#heure').innerHTML;
+                        document.querySelector('#heure').innerHTML = newTime;
+
+                        // Met à jour la température
+                        const newTemp = doc.querySelector('#temperature_div').innerHTML;
+                        document.querySelector('#temperature_div').innerHTML = newTemp;
+                    })
+                    .catch(error => console.error('Erreur lors de la mise à jour:', error));
+            }
+            setInterval(refreshData, 1000);
+        </script>
+    </div>
 </body>
 </html>

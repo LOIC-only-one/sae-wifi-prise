@@ -42,7 +42,12 @@
             <a class="buttonback" href="{% url 'home' %}">RETOUR</a>
             </div>
         {% else %}
-            <p>Aucune plage horaire trouvée.</p>
+        <div class="containerback2">
+            <div class="containernomplage">
+            <p class="nomplage2">Aucune plage horaire trouvée.</p>
+            </div>
+                <a class="buttonback2" href="{% url 'home' %}">RETOUR</a>
+                </div>
         {% endif %}
     </div>
 </div>

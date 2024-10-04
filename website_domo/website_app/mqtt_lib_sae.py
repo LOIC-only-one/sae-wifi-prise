@@ -87,6 +87,9 @@ class MqttConnexion:
 
     def publication(self, topic, message):
         self.client.publish(topic, message)
+    
+    def souscription(self,topic):
+        self.client.subscribe(topic=topic)
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
         if reason_code == 0:
