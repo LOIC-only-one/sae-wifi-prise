@@ -30,7 +30,6 @@ threading.Thread(target=run_mqtt, daemon=True).start()
 def alerte_temp():
     """Permet de vérifier et de gérer en continu une alerte de température ou non."""
     topic = "sae301/temperature/status"
-    
     while True:
         msg = mqtt_connexion.souscription(topic=topic)
         if msg is not None and msg.topic == topic:
@@ -40,7 +39,8 @@ def alerte_temp():
                     alerte_state["temp"] = "Une surchauffe est en cours..."
                 else:
                     alerte_state["temp"] = None
-        time.sleep(1) 
+        time.sleep(1)
+
 threading.Thread(target=alerte_temp, daemon=True).start()
 
 def user_login(request):
@@ -144,12 +144,9 @@ def check_time(mqtt_connexion):
     while True:
         now = timezone.localtime(timezone.now(), paris_tz).strftime("%H:%M")
         logging.debug(f"Heure actuelle: {now}")
-
         plages = PlageHoraire.objects.all()
-
         last_led1_state = led1_on
         last_led2_state = led2_on
-
         led1_on = False
         led2_on = False
 
@@ -194,9 +191,6 @@ def check_time(mqtt_connexion):
             mqtt_connexion.publication("sae301_2/led", "LED_OFF")
             logging.info("LED2 est éteinte.")
             light_states["lumiere2_status"] = "off"
-            
-        ### Ajouter bloc de code pour gerer les ALL
-
         time.sleep(15)
 threading.Thread(target=check_time, args=(mqtt_connexion,), daemon=True).start()
 
@@ -210,8 +204,6 @@ def get_light_status():
         "lumiere1_status": light_states["lumiere1_status"],
         "lumiere2_status": light_states["lumiere2_status"],
     }
-
-
 
 # Partie du CRUD concernant les plages horaires
 def plage_modifier(request, id):

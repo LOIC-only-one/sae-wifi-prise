@@ -15,7 +15,7 @@
             <a class="plage_deconnect" href="{% url 'logout' %}">Se déconnecter 🚪</a>
         </div>    
 
-        <div class="container">
+        <div class="container" id="container-led">
             <form method="post">
                 {% csrf_token %}
                 <!-- Lumière I 1 -->
@@ -83,6 +83,9 @@
                         // Met à jour la température
                         const newTemp = doc.querySelector('#temperature_div').innerHTML;
                         document.querySelector('#temperature_div').innerHTML = newTemp;
+
+                        //const newColor = doc.querySelector('#container-led').innerHTML;
+                        //document.querySelector('#container-led').innerHTML = newColor;
                     })
                     .catch(error => console.error('Erreur lors de la mise à jour:', error));
             }
