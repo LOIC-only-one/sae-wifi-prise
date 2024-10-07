@@ -64,6 +64,16 @@
                 <p>🌡️{{ temp }}°C</p>
             </div>
         </div>
+        <div class="box">
+            <div class="box-3">
+                {% if alerte %}
+                    <p>{{ alerte }}</p> 
+                {% endif %}
+            </div>
+        </div>
+        
+        
+    
 
 
     <!-- Code récuperé d'un site internet-->
@@ -80,12 +90,11 @@
                         const newTime = doc.querySelector('#heure').innerHTML;
                         document.querySelector('#heure').innerHTML = newTime;
 
-                        // Met à jour la température
                         const newTemp = doc.querySelector('#temperature_div').innerHTML;
                         document.querySelector('#temperature_div').innerHTML = newTemp;
 
-                        //const newColor = doc.querySelector('#container-led').innerHTML;
-                        //document.querySelector('#container-led').innerHTML = newColor;
+                        const newAlert = doc.querySelector("#alerte").innerHTML;
+                        document.querySelector("#alerte").innerHTML = newAlert;
                     })
                     .catch(error => console.error('Erreur lors de la mise à jour:', error));
             }
