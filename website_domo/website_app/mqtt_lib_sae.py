@@ -10,6 +10,8 @@ init(autoreset=True)
 
 class MqttConnexion:
     USERNAME = "serveur-rpi"
+    USERNAME_MQTT = "pi" 
+    PASSWORD_MQTT = "pi" 
 
     def __init__(self, broker: str = "broker.id00l.eu", port: int = 14022) -> None:
         self.broker = broker
@@ -19,6 +21,7 @@ class MqttConnexion:
         self.client.on_message = self.on_message
         self.client.on_disconnect = self.on_disconnect
         self.last_temp = None
+        self.client.username_pw_set(self.USERNAME_MQTT, self.PASSWORD_MQTT)
 
     def give_feedback(self, message, feedback_topic):
         feed = f"Envoi de feedback : {message} sur le topic {feedback_topic}"
@@ -88,7 +91,7 @@ class MqttConnexion:
     def publication(self, topic, message):
         self.client.publish(topic, message)
     
-    def souscription(self,topic):
+    def souscription(self, topic):
         self.client.subscribe(topic=topic)
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
@@ -111,7 +114,9 @@ class MqttConnexion:
 
     def handle_connexion(self):
         try:
+            self.client.username_pw_set("pi", "pi") 
             self.client.connect(self.broker, self.port, 60)
             self.client.loop_start()
         except Exception as e:
             logging.error(f"Erreur lors de la connexion ou pendant la réception des messages : {str(e)}")
+

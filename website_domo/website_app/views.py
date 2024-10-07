@@ -1,3 +1,4 @@
+import logging
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from .mqtt_lib_sae import MqttConnexion
@@ -8,6 +9,9 @@ from .forms import Prise1ModelForm
 from .models import PlageHoraire
 import pytz
 import time
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 mqtt_connexion = MqttConnexion()
 paris_tz = pytz.timezone('Europe/Paris')
@@ -22,10 +26,10 @@ alerte_state = {
 
 def run_mqtt():
     mqtt_connexion.handle_connexion()
+
 threading.Thread(target=run_mqtt, daemon=True).start()
 
 def alerte_temp():
-    ### FOncitone pas encore
     topic = "sae301/temperature/status"
     while True:
         msg = mqtt_connexion.souscription(topic=topic)
@@ -41,12 +45,15 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            logger.info(f"Utilisateur {username} connecté avec succès.")
             return redirect('home')
         else:
+            logger.warning(f"Tentative de connexion échouée pour le nom d'utilisateur : {username}")
             return render(request, 'login.html', {'error': 'Identifiants invalides.'})
     return render(request, 'login.html')
 
 def user_logout(request):
+    logger.info("Utilisateur déconnecté.")
     logout(request)
     return redirect('login')
 
@@ -59,6 +66,7 @@ def home(request):
         
         if action:
             mqtt_connexion.handle_light(action)
+            logger.info(f"Action effectuée : {action}")
             if action == "lumiere1_on":
                 light_states["lumiere1_status"] = "on"
             elif action == "lumiere1_off":
@@ -109,6 +117,7 @@ def plage_horaire(request):
                 heure_fin=heure_fin,
                 actions=action
             )
+            logger.info(f"Nouveau créneau horaire créé : {nom} de {heure_debut} à {heure_fin} avec l'action {action}")
             return redirect('plage_horaire')
 
     return render(request, 'plage_horaires.html', {
@@ -127,7 +136,7 @@ def check_time(mqtt_connexion):
         for plage in plages:
             heure_debut = plage.heure_debut
             heure_fin = plage.heure_fin
-
+            logger.info(f"Plage trouvée : {plage}")
             if heure_debut <= now < heure_fin:
                 if plage.actions == "allumer":
                     if plage.led == "LED1" or plage.led == "ALL":
@@ -135,11 +144,13 @@ def check_time(mqtt_connexion):
                             led1_on = True
                             mqtt_connexion.publication("sae301/led", "LED_ON")
                             light_states["lumiere1_status"] = "on"
+                            logger.info(f"LED1 allumée par le planning : {plage.nom_plage}")
                     if plage.led == "LED2" or plage.led == "ALL":
                         if not led2_on:
                             led2_on = True
                             mqtt_connexion.publication("sae301_2/led", "LED_ON")
                             light_states["lumiere2_status"] = "on"
+                            logger.info(f"LED2 allumée par le planning : {plage.nom_plage}")
 
                 elif plage.actions == "eteindre":
                     if plage.led == "LED1" or plage.led == "ALL":
@@ -147,11 +158,13 @@ def check_time(mqtt_connexion):
                             led1_on = False
                             mqtt_connexion.publication("sae301/led", "LED_OFF")
                             light_states["lumiere1_status"] = "off"
+                            logger.info(f"LED1 éteinte par le planning : {plage.nom_plage}")
                     if plage.led == "LED2" or plage.led == "ALL":
                         if led2_on:
                             led2_on = False
                             mqtt_connexion.publication("sae301_2/led", "LED_OFF")
                             light_states["lumiere2_status"] = "off"
+                            logger.info(f"LED2 éteinte par le planning : {plage.nom_plage}")
 
             else:
                 if plage.actions == "allumer":
@@ -160,11 +173,13 @@ def check_time(mqtt_connexion):
                             led1_on = False
                             mqtt_connexion.publication("sae301/led", "LED_OFF")
                             light_states["lumiere1_status"] = "off"
+                            logger.info(f"LED1 éteinte en dehors du planning : {plage.nom_plage}")
                     if plage.led == "LED2" or plage.led == "ALL":
                         if led2_on:
                             led2_on = False
                             mqtt_connexion.publication("sae301_2/led", "LED_OFF")
                             light_states["lumiere2_status"] = "off"
+                            logger.info(f"LED2 éteinte en dehors du planning : {plage.nom_plage}")
 
                 elif plage.actions == "eteindre":
                     if plage.led == "LED1" or plage.led == "ALL":
@@ -172,11 +187,13 @@ def check_time(mqtt_connexion):
                             led1_on = True
                             mqtt_connexion.publication("sae301/led", "LED_ON")
                             light_states["lumiere1_status"] = "on"
+                            logger.info(f"LED1 allumée en dehors du planning : {plage.nom_plage}")
                     if plage.led == "LED2" or plage.led == "ALL":
                         if not led2_on:
                             led2_on = True
                             mqtt_connexion.publication("sae301_2/led", "LED_ON")
                             light_states["lumiere2_status"] = "on"
+                            logger.info(f"LED2 allumée en dehors du planning : {plage.nom_plage}")
 
         time.sleep(5)
 
@@ -194,12 +211,14 @@ def plage_modifier(request, id):
         form = Prise1ModelForm(request.POST, instance=plage)
         if form.is_valid():
             form.save()
+            logger.info(f"Créneau horaire {plage.nom_plage} modifié.")
             return redirect('plage_horaire')
     else:
         form = Prise1ModelForm(instance=plage)
-    return render(request, 'plage_modifieur.html', {'form': form})
+    return render(request, 'plage_modifier.html', {'form': form, 'plage': plage})
 
 def plage_delete(request, id):
-    obj = get_object_or_404(PlageHoraire, pk=id)
-    obj.delete()
+    plage = get_object_or_404(PlageHoraire, pk=id)
+    plage.delete()
+    logger.info(f"Créneau horaire {plage.nom_plage} supprimé.")
     return redirect('plage_horaire')
