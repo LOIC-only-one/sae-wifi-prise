@@ -215,7 +215,7 @@ def plage_modifier(request, id):
             return redirect('plage_horaire')
     else:
         form = Prise1ModelForm(instance=plage)
-    return render(request, 'plage_modifier.html', {'form': form, 'plage': plage})
+    return render(request, 'plage_modifieur.html', {'form': form, 'plage': plage})
 
 def plage_delete(request, id):
     plage = get_object_or_404(PlageHoraire, pk=id)
