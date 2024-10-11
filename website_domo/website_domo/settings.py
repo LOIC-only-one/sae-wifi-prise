@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -26,10 +25,24 @@ SECRET_KEY = 'django-insecure-9!=6dho+y*((e=sdpnb^qz0(6%!(n-up26=3l0ccxriv&!g)ip
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['domo.id00l.eu', 'localhost', '127.0.0.1', "*"]
 
 
-# Application definition
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')  # Dossier pour collectstatic
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # Dossier pour les fichiers statiques que vous développez
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://id00l.eu",
+    "http://id00l.eu",
+]
+
 
 INSTALLED_APPS = [
     'website_app.apps.WebsiteAppConfig',
@@ -71,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'website_domo.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -81,7 +93,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -101,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -109,16 +119,6 @@ LANGUAGE_CODE = 'fr'
 TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

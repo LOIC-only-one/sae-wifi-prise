@@ -10,8 +10,11 @@
 <body>
     <div class="box">
         <div class="containertop" id="containertop">
-            <p class="heure" id="heure">🕑 {{ time }} </p>
-            <a class="plage_deconnect" href="{% url 'plage_horaire' %}">⏲️</a>
+            <p class="heure" id="heure">🕑 {{ time }}</p>
+            <div class="containersettings">
+                <a class="plage_deconnect" href="{% url 'plage_horaire' %}">⏲️</a>
+                <a class="plage_deconnect" href="{% url 'settings' %}">🔧</a>
+            </div>
             <a class="plage_deconnect" href="{% url 'logout' %}">Se déconnecter 🚪</a>
         </div>    
 
@@ -63,6 +66,7 @@
             <div class="boxtemperature" id="temperature_div">
                 <p>🌡️{{ temp }}°C</p>
             </div>
+            
             <div class="boxtemperature">
                 {% if alerte %}
                     <p class="alerte" id="alerte">{{ alerte }}</p> 
@@ -70,8 +74,6 @@
             </div>
         </div>
         
-        
-    
         <script src="{% static 'app/script.js' %}"></script>
 
         <script>
@@ -79,22 +81,20 @@
                 fetch(window.location.href)
                     .then(response => response.text())
                     .then(data => {
-
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(data, 'text/html');
-
-                        // Met à jour l'heure
-                        const newTime = doc.querySelector('#heure').innerHTML;
-                        document.querySelector('#heure').innerHTML = newTime;
-
-                        const newTemp = doc.querySelector('#temperature_div').innerHTML;
-                        document.querySelector('#temperature_div').innerHTML = newTemp;
-
-                        const newAlert = doc.querySelector("#alerte").innerHTML;
-                        document.querySelector("#alerte").innerHTML = newAlert;
+                
+                        document.querySelector('#heure').innerHTML = doc.querySelector('#heure').innerHTML;
+        
+                        document.querySelector('#temperature_div').innerHTML = doc.querySelector('#temperature_div').innerHTML;
+        
+                        const alertElement = doc.querySelector("#alerte");
+                        const currentAlertElement = document.querySelector("#alerte");
+                        currentAlertElement.innerHTML = alertElement ? alertElement.innerHTML : "";
                     })
-                    .catch(error => console.error('Erreur lors de la mise à jour:', error));
+                    .catch(error => console.error('Error fetching data:', error));
             }
+
             setInterval(refreshData, 1000);
         </script>
     </div>

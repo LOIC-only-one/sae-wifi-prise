@@ -5,8 +5,8 @@ from .mqtt_lib_sae import MqttConnexion
 import threading
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from .forms import Prise1ModelForm
-from .models import PlageHoraire
+from .forms import Prise1ModelForm, SettingsModelForm
+from .models import PlageHoraire, Settings
 import pytz
 import time
 
@@ -16,27 +16,18 @@ logger = logging.getLogger(__name__)
 mqtt_connexion = MqttConnexion()
 paris_tz = pytz.timezone('Europe/Paris')
 
-light_states = {
-    "lumiere1_status": "off",
-    "lumiere2_status": "off"
-}
+light_states = mqtt_connexion.state_led_info
+
 alerte_state = {
-    "temp": None,
+    "temp": "Aucune surchauffe détectée.",
 }
 
 def run_mqtt():
     mqtt_connexion.handle_connexion()
 
+
 threading.Thread(target=run_mqtt, daemon=True).start()
 
-def alerte_temp():
-    topic = "sae301/temperature/status"
-    while True:
-        msg = mqtt_connexion.souscription(topic=topic)
-        alerte_state["temp"] = "Une surchauffe est en cours..." if msg else None
-        time.sleep(5)
-
-threading.Thread(target=alerte_temp, daemon=True).start()
 
 def user_login(request):
     if request.method == 'POST':
@@ -57,43 +48,60 @@ def user_logout(request):
     logout(request)
     return redirect('login')
 
+def dic_alert():
+    con = mqtt_connexion.alert
+    if con:
+        alerte_state["temp"] = "Surchauffe détectée !"
+    else:
+        alerte_state["temp"] = "Aucune surchauffe détectée."
+    
+threading.Thread(target=dic_alert, daemon=True).start()
+
 @login_required(login_url='/login/')
 def home(request):
     now = timezone.localtime(timezone.now()).strftime("%H:%M:%S")
     
     if request.method == "POST":
         action = request.POST.get('action')
-        
         if action:
             mqtt_connexion.handle_light(action)
             logger.info(f"Action effectuée : {action}")
-            if action == "lumiere1_on":
-                light_states["lumiere1_status"] = "on"
-            elif action == "lumiere1_off":
-                light_states["lumiere1_status"] = "off"
-            elif action == "lumiere2_on":
-                light_states["lumiere2_status"] = "on"
-            elif action == "lumiere2_off":
-                light_states["lumiere2_status"] = "off"
-            elif action == "all_on":
-                light_states["lumiere1_status"] = "on"
-                light_states["lumiere2_status"] = "on"
-            elif action == "all_off":
-                light_states["lumiere1_status"] = "off"
-                light_states["lumiere2_status"] = "off"
-    
-    temp = mqtt_connexion.get_temp()
-    light_status = get_light_status()
+            update_light_states(action, mqtt_connexion)
+        return redirect('home')
 
+    temp = mqtt_connexion.get_temp()
     context = {
         "temp": temp,
         "time": now,
-        "lumiere1_status": light_status["lumiere1_status"],
-        "lumiere2_status": light_status["lumiere2_status"],
-        "alerte": alerte_state["temp"]
+        "lumiere1_status": light_states["led1"],
+        "lumiere2_status": light_states["led2"],
+        "alerte": alerte_state["temp"],
     }
 
     return render(request, "index.html", context)
+
+def update_light_states(action, mqtt_connexion):
+    if action == "lumiere1_on":
+        light_states["led1"] = "on"
+        
+    elif action == "lumiere1_off":
+        light_states["led1"] = "off"
+
+    elif action == "lumiere2_on":
+        light_states["led2"] = "on"
+
+    elif action == "lumiere2_off":
+        light_states["led2"] = "off"
+
+    elif action == "all_on":
+        light_states["led1"] = "on"
+        light_states["led2"] = "on"
+
+    elif action == "all_off":
+        light_states["led1"] = "off"
+        light_states["led2"] = "off"
+
+threading.Thread(target=update_light_states, args=(None, mqtt_connexion), daemon=True).start()
 
 @login_required(login_url='/login/')
 def plage_horaire(request):
@@ -222,3 +230,40 @@ def plage_delete(request, id):
     plage.delete()
     logger.info(f"Créneau horaire {plage.nom_plage} supprimé.")
     return redirect('plage_horaire')
+
+def settings(request):
+    if request.method == 'POST':
+        form_settings = SettingsModelForm(request.POST)
+        
+        if form_settings.is_valid():
+            numero_telephone = form_settings.cleaned_data["numero_telephone"]
+            serveur_smtp = form_settings.cleaned_data["serveur_smtp"]
+            port_smtp = form_settings.cleaned_data["port_smtp"]
+            email_expediteur = form_settings.cleaned_data["email_expediteur"]
+            mot_de_passe = form_settings.cleaned_data["mot_de_passe"]
+            email_destinataire = form_settings.cleaned_data["email_destinataire"]
+
+            try:
+                settings = Settings.objects.get(id=0)
+
+                # Mettre à jour ses attributs
+                settings.numero_telephone = numero_telephone
+                settings.serveur_smtp = serveur_smtp
+                settings.port_smtp = port_smtp
+                settings.email_expediteur = email_expediteur
+                settings.mot_de_passe = mot_de_passe
+                settings.email_destinataire = email_destinataire
+                settings.save()
+
+                logger.info(f"Objet Settings mis à jour : {settings}")
+
+                return redirect('home')
+
+            except Settings.DoesNotExist:
+                logger.error("L'objet Settings avec l'ID 0 n'existe pas.")
+
+    else:
+        form_settings = SettingsModelForm()
+
+    return render(request, 'settings.html', {'form_settings': form_settings})
+

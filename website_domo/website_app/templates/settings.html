@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app/StylePlage_modifieur.css' %}">
+    <title>Paramètres</title>
+</head>
+<body>
+    <div class="container">
+        <h2>🔧</h2>
+    <div class="box">
+        <form action="{% url 'settings' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+        {{ form_settings.as_p }}
+        </div>
+        <div class="container">
+        <input type="submit" class="btn" value="Confirmer">
+        <a class="btn" href="{% url 'home' %}">Retour</a>
+        </div>
+    </div>
+    </form>
+</div>
+{% load static %}
+<script src="{% static 'app/script.js' %}"></script>
+</body>
+</html>

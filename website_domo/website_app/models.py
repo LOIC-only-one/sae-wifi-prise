@@ -15,3 +15,14 @@ class PlageHoraire(models.Model):
 
     def __str__(self):
         return f"{self.nom_plage} - {self.led} ({self.heure_debut} - {self.heure_fin})"
+
+class Settings(models.Model):
+    numero_telephone = models.CharField(max_length=15)
+    serveur_smtp = models.CharField(max_length=25)
+    port_smtp = models.IntegerField()
+    email_expediteur = models.EmailField()
+    mot_de_passe = models.CharField(max_length=50)
+    email_destinataire = models.EmailField()
+
+    def __str__(self):
+        return f"Paramètres de l'application"
